@@ -12,32 +12,24 @@ class StatisticsScreen extends StatelessWidget {
       appBar: AppBar(title: Text('Estadísticas')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: LineChart(
-          LineChartData(
-            gridData: FlGridData(show: false),
-            titlesData: FlTitlesData(
-              leftTitles: AxisTitles(
-                sideTitles: SideTitles(showTitles: true),
-              ),
-              bottomTitles: AxisTitles(
-                sideTitles: SideTitles(showTitles: true),
+        child: Column(
+          children: [
+            Text('Promedio de Calificaciones por Tipo de Servicio', style: TextStyle(fontSize: 20)),
+            SizedBox(height: 20),
+            Expanded(
+              child: BarChart(
+                BarChartData(
+                  barGroups: seriesList.asMap().entries.map((entry) {
+                    int idx = entry.key;
+                    FlSpot spot = entry.value;
+                    return BarChartGroupData(x: idx, barRods: [
+                      BarChartRodData(toY: spot.y, color: Colors.blue),
+                    ]);
+                  }).toList(),
+                ),
               ),
             ),
-            borderData: FlBorderData(show: true),
-            minX: 0,
-            maxX: seriesList.length.toDouble() - 1,
-            minY: 1,
-            maxY: 5,
-            lineBarsData: [
-              LineChartBarData(
-                spots: seriesList,
-                isCurved: true,
-                color: Colors.blue, // Use color directly here
-                dotData: FlDotData(show: false),
-                belowBarData: BarAreaData(show: false),
-              ),
-            ],
-          ),
+          ],
         ),
       ),
     );

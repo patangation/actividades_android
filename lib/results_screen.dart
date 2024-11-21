@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'database_helper.dart';
 import 'statistics_screen.dart'; // Import the statistics screen if needed
+import 'package:fl_chart/fl_chart.dart'; // Import fl_chart
 
 class ResultsScreen extends StatefulWidget {
   @override
@@ -92,9 +93,31 @@ class _ResultsScreenState extends State<ResultsScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
+          // Calculate average ratings for each service type
+          Map<String, List<int>> ratingsMap = {};
+          for (var survey in surveys) {
+            String serviceType = survey['serviceType'];
+            int rating = survey['question1'];
+            if (!ratingsMap.containsKey(serviceType)) {
+              ratingsMap[serviceType] = [];
+            }
+            ratingsMap[serviceType]!.add(rating);
+          }
+
+          // Prepare data for statistics
+          List<FlSpot> seriesList = [];
+          int index = 0;
+          ratingsMap.forEach((serviceType, ratings) {
+            double averageRating = ratings.reduce((a, b) => a + b) / ratings.length;
+            seriesList.add(FlSpot(index.toDouble(), averageRating)); // x: index, y: average rating
+            index++;
+          });
+
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => StatisticsScreen(seriesList: [])),
+            MaterialPageRoute(
+              builder: (context) => StatisticsScreen(seriesList: seriesList),
+            ),
           );
         },
         child: Icon(Icons.bar_chart),
